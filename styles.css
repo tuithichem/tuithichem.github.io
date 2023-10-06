@@ -28,7 +28,7 @@ a {
 }
 
 .logo img {
-    width: 30px;
+    width: 40px;
     margin-right: 15px;
     display: block;
 }
@@ -135,6 +135,8 @@ a {
 .left-sidebar {
     flex-basis: 25%;
     align-self: flex-start;
+    position: sticky;
+    top: 73px;
 }
 
 .sidebar-profile-box {
@@ -254,6 +256,8 @@ a {
 .right-sidebar {
     flex-basis: 25%;
     align-self: flex-start;
+    position: sticky;
+    top: 73px;
 }
 
 .sidebar-news {
@@ -558,3 +562,192 @@ a {
     width: 18px;
     margin-right: 8px;
 }
+
+/* ---------------------------profile-menu-wrap----------------------- */
+
+.profile-menu-wrap  {
+    position: absolute;
+    top: 100%;
+    right: 5%;
+    width: 320px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s;
+}
+
+.profile-menu-wrap.open-menu {
+    max-height: 400px;
+
+}
+
+.profile-menu {
+    background: #222;
+    color: #fff;
+    padding: 20px;
+    margin: 10px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-info img {
+    width: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.user-info h3 {
+    font-weight: 500;
+    margin-bottom: -7px;
+
+}
+
+.user-info a {
+    color: #c9dbf8;
+    font-size: 13px;
+    line-height: 30px;
+}
+
+.profile-menu hr {
+    border: 0;
+    height: 1px;
+    width: 100%;
+    background: #fff;
+    margin: 15px 0 10px;
+}
+
+.profile-menu-link {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    margin: 12px 0 ;
+    font-size: 14px;
+}
+
+.profile-menu-link p {
+    width: 100%;
+}
+
+.profile-menu-link img {
+    width: 35px;
+    border-radius: 50%;
+    margin-right: 15px;
+
+}
+
+
+
+
+
+/* ------------------------reponsive--------------------- */
+
+@media only screen and (max-width: 600px){
+    .searchbox{
+        background: transparent;
+        width: auto;
+        padding: 0;
+    }
+
+    .searchbox input {
+        width: 0;
+        padding: 0;
+    }
+
+    .nav-center ul li a span {
+        display: none;  
+    }
+
+    .nav-center ul li a {
+        padding-right: 0;
+        margin: 5px;
+    }
+
+    .nav-profile-img {
+        width: 30px;
+    }
+
+    .container {
+        padding: 15px 3%;
+    }
+
+    .left-sidebar, .right-sidebar {
+        flex-basis: 100%;
+        position: relative;
+        top: unset;
+    }
+
+    .main-content {
+        flex-basis: 100%;
+    }
+
+    .post-stats div {
+        margin: 2px 0;
+    }
+
+    .post-actitivty-link span  {
+        display: none;
+
+    }
+
+    .post-actitivty-link img {
+        margin-right: 0;
+    }
+
+    .heartbreak {
+        padding: 0;
+        margin-left: -50px;
+    }
+}
+
+/* ------------------------heart ----------------------------- */
+
+.heartnew {
+    margin-top: 70px;
+}
+
+
+.heart {
+	width: 200px;
+	height: 200px;
+	left: 50%;
+	z-index: 1;
+	display: block;
+	position: absolute;
+	transform: translate(-50%,-50%);
+	animation: heart 1s ease infinite
+}
+
+@keyframes heart {
+	96% {
+		transform: translate(-50%,-50%) scale(.8,.8)
+	}
+	100% {
+		transform: translate(-50%,-50%) scale(1,1)
+	}
+}
+
+.heart div {
+	background: #ff0000;
+	width: 71px;
+	height: 126px;
+	top: 40px;
+	display: block;
+	position: absolute;
+	border-radius: 50%
+	}
+
+.left {
+	left: 45px;
+	transform: rotate(330deg);
+}
+
+.right {
+	right: 45px;
+	transform: rotate(30deg);
+}
+
+
+
+
