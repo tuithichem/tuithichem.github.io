@@ -1,543 +1,326 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE-Edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>Nguyễn Trịnh Ngọc Anh</title>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="nav-left">
-            <a href="index.html" class="logo"><img src="images/logo2.png"></a>
-            <div class="searchbox">
-                <img src="images/search.png">
-                <input type="text" placeholder="Search">
-            </div>
-
-        </div>
-        <div class="nav-center">
-            <ul>
-                <li><a href="#" class="active-link"><img src="images/home.png"><span>Trang chủ</span></a></li>
-                <li><a href="#"><img src="images/network.png"><span>Bạn bè</span></a></li>
-                <li><a href="#"><img src="images/jobs.png"><span>Công việc</span></a></li>
-                <li><a href="#"><img src="images/message.png"><span>Tin nhắn</span></a></li>
-                <li><a href="#"><img src="images/notification.png"><span>Thông báo</span></a></li>
-            </ul>
-        </div>
-        <div class="nav-right">
-            <div class="online">
-                <img src="images/avatar.jpg" class="nav-profile-img" onclick="toggleMenu()">
-            </div>
-        </div>
-<!-- ----------------------------------------drop menu------------------------------ -->
-
-    <div class="profile-menu-wrap" id="profileMenu">
-      <div class="profile-menu">
-        <div class="user-info">
-          <img src="images/avatar.jpg">
-          <div>
-            <h3>Ngoc Anh</h3>
-            <a href="#">See your profile</a>
-          </div>
-        </div>
-        <hr>
-        <a href="#" class="profile-menu-link">
-          <img src="images/feedback.png">
-          <p>Give Feedback</p>
-          <span>></span>
-        </a>
-        <a href="#" class="profile-menu-link">
-          <img src="images/setting.png">
-          <p>Setting & Privacy</p>
-          <span>></span>
-        </a>
-        <a href="#" class="profile-menu-link">
-          <img src="images/help.png">
-          <p>Help & Support</p>
-          <span>></span>
-        </a>
-        <a href="#" class="profile-menu-link">
-          <img src="images/display.png">
-          <p>Dislay & Accessibility</p>
-          <span>></span>
-        </a>
-        <a href="#" class="profile-menu-link">
-          <img src="images/logout.png">
-          <p>Logout</p>
-          <span>></span>
-        </a>
-      </div>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+  <head>
+    <title>Code trái tim đỏ GameVui</title>
+    <meta name="Generator" content="EditPlus" />
+    <meta name="Author" content="" />
+    <meta name="Keywords" content="" />
+    <meta name="Description" content="" />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      html,
+      body {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+        background: rgba(0, 0, 0, 0.851);
+      }
+      canvas {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <canvas id="pinkboard"></canvas>
     </div>
+    <script>
+      var settings = {
+        particles: {
+          length: 10000, // maximum amount of particles
+          duration: 4, // particle duration in sec
+          velocity: 80, // particle velocity in pixels/sec
+          effect: -1.3, // play with this for a nice effect
+          size: 8, // particle size in pixels
+        },
+      };
+      /*
+       */
+      (function () {
+        var b = 0;
+        var c = ["ms", "moz", "webkit", "o"];
+        for (var a = 0; a < c.length && !window.requestAnimationFrame; ++a) {
+          window.requestAnimationFrame = window[c[a] + "RequestAnimationFrame"];
+          window.cancelAnimationFrame =
+            window[c[a] + "CancelAnimationFrame"] ||
+            window[c[a] + "CancelRequestAnimationFrame"];
+        }
+        if (!window.requestAnimationFrame) {
+          window.requestAnimationFrame = function (h, e) {
+            var d = new Date().getTime();
+            var f = Math.max(0, 16 - (d - b));
+            var g = window.setTimeout(function () {
+              h(d + f);
+            }, f);
+            b = d + f;
+            return g;
+          };
+        }
+        if (!window.cancelAnimationFrame) {
+          window.cancelAnimationFrame = function (d) {
+            clearTimeout(d);
+          };
+        }
+      })();
+      /*
+       * Point class
+       */
+      var Point = (function () {
+        function Point(x, y) {
+          this.x = typeof x !== "undefined" ? x : 0;
+          this.y = typeof y !== "undefined" ? y : 0;
+        }
+        Point.prototype.clone = function () {
+          return new Point(this.x, this.y);
+        };
+        Point.prototype.length = function (length) {
+          if (typeof length == "undefined")
+            return Math.sqrt(this.x * this.x + this.y * this.y);
+          this.normalize();
+          this.x *= length;
+          this.y *= length;
+          return this;
+        };
+        Point.prototype.normalize = function () {
+          var length = this.length();
+          this.x /= length;
+          this.y /= length;
+          return this;
+        };
+        return Point;
+      })();
+      /*
+       * Particle class
+       */
+      var Particle = (function () {
+        function Particle() {
+          this.position = new Point();
+          this.velocity = new Point();
+          this.acceleration = new Point();
+          this.age = 0;
+        }
+        Particle.prototype.initialize = function (x, y, dx, dy) {
+          this.position.x = x;
+          this.position.y = y;
+          this.velocity.x = dx;
+          this.velocity.y = dy;
+          this.acceleration.x = dx * settings.particles.effect;
+          this.acceleration.y = dy * settings.particles.effect;
+          this.age = 0;
+        };
+        Particle.prototype.update = function (deltaTime) {
+          this.position.x += this.velocity.x * deltaTime;
+          this.position.y += this.velocity.y * deltaTime;
+          this.velocity.x += this.acceleration.x * deltaTime;
+          this.velocity.y += this.acceleration.y * deltaTime;
+          this.age += deltaTime;
+        };
+        Particle.prototype.draw = function (context, image) {
+          function ease(t) {
+            return --t * t * t + 1;
+          }
+          var size = image.width * ease(this.age / settings.particles.duration);
+          context.globalAlpha = 1 - this.age / settings.particles.duration;
+          context.drawImage(
+            image,
+            this.position.x - size / 2,
+            this.position.y - size / 2,
+            size,
+            size
+          );
+        };
+        return Particle;
+      })();
+      /*
+       * ParticlePool class
+       */
+      var ParticlePool = (function () {
+        var particles,
+          firstActive = 0,
+          firstFree = 0,
+          duration = settings.particles.duration;
 
-    </nav>
+        function ParticlePool(length) {
+          // create and populate particle pool
+          particles = new Array(length);
+          for (var i = 0; i < particles.length; i++)
+            particles[i] = new Particle();
+        }
+        ParticlePool.prototype.add = function (x, y, dx, dy) {
+          particles[firstFree].initialize(x, y, dx, dy);
 
-<!------------------- navbar close ------------------------------>
+          // handle circular queue
+          firstFree++;
+          if (firstFree == particles.length) firstFree = 0;
+          if (firstActive == firstFree) firstActive++;
+          if (firstActive == particles.length) firstActive = 0;
+        };
+        ParticlePool.prototype.update = function (deltaTime) {
+          var i;
 
-    <div class="container">
-        <!-- -------------------left-sidebar--------------------->
-        <div class="left-sidebar">
-            <div class="sidebar-profile-box">
-                <img src="images/cover.jpg" width="100%">
-                <div class="sidebar-profile-info">
-                    <img src="images/avatar.jpg">
-                    <h1>Ngọc Anh</h1>
-                    <h3>tui mà Nhân Mã</h3>
-                    <ul>
-                        <li>Lượt xem trang cá nhân<span>19</span></li>
-                        <li>Lượt xem bài viết<span>12</span></li>
-                        <li>Bạn bè<span>2006</span></li>
-                    </ul>
-                </div>
-                <div class="sidebar-profile-link">
-                    <a href="#"><img src="images/items.png">Đã Lưu</a>
-                    <a href="#"><img src="images/premium.png">Premium</a>
-                </div>
-            </div>
-            <div class="sidebar-activity">
-                <h3>GẦN ĐÂY</h3>
-                <a href="#"><img src="images/recent.png">Ngọc Anh đáng yêu</a>
-                <a href="#"><img src="images/recent.png"> Web Development</a>
-                <a href="#"><img src="images/recent.png"> Web Development</a>
-                <a href="#"><img src="images/recent.png"> Web Development</a>
-                <a href="#"><img src="images/recent.png"> Web Development</a>
-                <h3>GROUPS</h3>
-                <a href="#"><img src="images/group.png"> Web Development</a>
-                <a href="#"><img src="images/group.png"> Web Development</a>
-                <a href="#"><img src="images/group.png"> Web Development</a>
-                <a href="#"><img src="images/group.png"> Web Development</a>
-                <h3>HASHTAG</h3>
-                <a href="#"><img src="images/hashtag.png"> Web Development</a>
-                <a href="#"><img src="images/hashtag.png"> Web Development</a>
-                <a href="#"><img src="images/hashtag.png"> Web Development</a>
-                <div class="discover-more-link">
-                    <a href="#">Xem thêm</a>
-                </div>
-            </div>
-        </div>
+          // update active particles
+          if (firstActive < firstFree) {
+            for (i = firstActive; i < firstFree; i++)
+              particles[i].update(deltaTime);
+          }
+          if (firstFree < firstActive) {
+            for (i = firstActive; i < particles.length; i++)
+              particles[i].update(deltaTime);
+            for (i = 0; i < firstFree; i++) particles[i].update(deltaTime);
+          }
 
-        
+          // remove inactive particles
+          while (
+            particles[firstActive].age >= duration &&
+            firstActive != firstFree
+          ) {
+            firstActive++;
+            if (firstActive == particles.length) firstActive = 0;
+          }
+        };
+        ParticlePool.prototype.draw = function (context, image) {
+          // draw active particles
+          if (firstActive < firstFree) {
+            for (i = firstActive; i < firstFree; i++)
+              particles[i].draw(context, image);
+          }
+          if (firstFree < firstActive) {
+            for (i = firstActive; i < particles.length; i++)
+              particles[i].draw(context, image);
+            for (i = 0; i < firstFree; i++) particles[i].draw(context, image);
+          }
+        };
+        return ParticlePool;
+      })();
+      /*
+       * Putting it all together
+       */
+      (function (canvas) {
+        var context = canvas.getContext("2d"),
+          particles = new ParticlePool(settings.particles.length),
+          particleRate =
+            settings.particles.length / settings.particles.duration, // particles/sec
+          time;
 
-        <!-- -------------------main-content------------------ -->
-        <div class="main-content">
-            <div class="create-post">
-                <div class="create-post-input">
-                    <img src="images/avatar.jpg">
-                    <textarea rows="2" placeholder="Bạn đang nghĩ gì ?"></textarea>
-                </div>
-                <div class= "create-post-links">
-                    <li><img src="images/photo.png">Ảnh</li>
-                    <li><img src="images/video.png">Video</li>
-                    <li><img src="images/event.png">Sự kiện</li>
-                    <li>Đăng</li>
-                </div>
-            </div>
-            <div class="sort-by">
-                <hr>
-                <p>Sắp xếp theo: <span>Bài mới nhất <img src="images/down-arrow.png"></span></p>
-            </div>
+        // get point on heart with -PI <= t <= PI
+        function pointOnHeart(t) {
+          return new Point(
+            160 * Math.pow(Math.sin(t), 3),
+            130 * Math.cos(t) -
+              50 * Math.cos(2 * t) -
+              20 * Math.cos(3 * t) -
+              10 * Math.cos(4 * t) +
+              25
+          );
+        }
 
-            <div class="post">
-                <div class="post-author">
-                    <img src="images/avatar.jpg">
-                    <div>
-                        <h1>Ngọc Anh</h1>
-                        <small></small>
-                        <small>10/09/2023 &middot; 11:32 PM</small>
-                    </div>
-                </div>
-                <p>Khi tôi hỏi bạn tôi: Sách của tao đâuu</p>
-                <p>Và nó :</p>
-                <img src="images/votoidau.jpg" width="100%">
-                <div class="post-stats">
-                    <div>
-                        <img src="images/thumbsup.png">
-                        <img src="images/love.png">
-                        <img src="images/clap.png">
-                        <span class="liked-users">trần kính hoàng và  2006 người khác </span>
-                    </div>
-                    <div>
-                        <span>1 lượt bình luận &middot; 1 lượt chia sẻ</span>
-                    </div>
-                </div>
-                <div class="post-actitivty">
-                    <div>
-                        <img src="images/avatar.jpg" class="post-actitivty-user-icon">
-                        <img src="images/down-arrow.png" class="post-actitivty-arrow-icon">
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/like.png">
-                        <span>Thích</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/comment.png">
-                        <span>Bình luận</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/share.png">
-                        <span>Chia sẻ</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/send.png">
-                        <span>Chuyển tiếp</span>
-                    </div>
-                </div>
-            </div>
-s
-            <div class="post">
-                <div class="post-author">
-                    <img src="images/user-3.png">
-                    <div>
-                        <h1>trần kính hoàng</h1>
-                        <small></small>
-                        <small>10/06/2023 &middot; 12:56 PM</small>
-                    </div>
-                </div>
-                <p>Gọi em là cẩu vì anh...</p>
-                <p>Cần cẩu</p>
-                <img src="images/akita.jpeg" width="100%">
-                <div class="post-stats">
-                    <div>
-                        <img src="images/thumbsup.png">
-                        <img src="images/love.png">
-                        <img src="images/clap.png">
-                        <span class="liked-users">trần kính hoàng và  75 người khác </span>
-                    </div>
-                    <div>
-                        <span>22 lượt bình luận &middot; 40 lượt chia sẻ</span>
-                    </div>
-                </div>
-                <div class="post-actitivty">
-                    <div>
-                        <img src="images/avatar.jpg" class="post-actitivty-user-icon">
-                        <img src="images/down-arrow.png" class="post-actitivty-arrow-icon">
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/like.png">
-                        <span>Thích</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/comment.png">
-                        <span>Bình luận</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/share.png">
-                        <span>Chia sẻ</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/send.png">
-                        <span>Chuyển tiếp</span>
-                    </div>
-                </div>
-            </div>
+        // creating the particle image using a dummy canvas
+        var image = (function () {
+          var canvas = document.createElement("canvas"),
+            context = canvas.getContext("2d");
+          canvas.width = settings.particles.size;
+          canvas.height = settings.particles.size;
+          // helper function to create the path
+          function to(t) {
+            var point = pointOnHeart(t);
+            point.x =
+              settings.particles.size / 2 +
+              (point.x * settings.particles.size) / 350;
+            point.y =
+              settings.particles.size / 2 -
+              (point.y * settings.particles.size) / 350;
+            return point;
+          }
+          // create the path
+          context.beginPath();
+          var t = -Math.PI;
+          var point = to(t);
+          context.moveTo(point.x, point.y);
+          while (t < Math.PI) {
+            t += 0.01; // baby steps!
+            point = to(t);
+            context.lineTo(point.x, point.y);
+          }
+          context.closePath();
+          // create the fill
+          context.fillStyle = "#f50b02";
+          context.fill();
+          // create the image
+          var image = new Image();
+          image.src = canvas.toDataURL();
+          return image;
+        })();
 
-            <div class="post">
-                <div class="post-author">
-                    <img src="images/user-3.png">
-                    <div>
-                        <h1>trần kính hoàng</h1>
-                        <small></small>
-                        <small>10/06/2023 &middot; 12:56 PM</small>
-                    </div>
-                </div>
-                <p></p>
-                <p>Cần cẩu</p>
-                <img src="images/akita.jpeg" width="100%">
-                <div class="post-stats">
-                    <div>
-                        <img src="images/thumbsup.png">
-                        <img src="images/love.png">
-                        <img src="images/clap.png">
-                        <span class="liked-users">trần kính hoàng và  75 người khác </span>
-                    </div>
-                    <div>
-                        <span>22 lượt bình luận &middot; 40 lượt chia sẻ</span>
-                    </div>
-                </div>
-                <div class="post-actitivty">
-                    <div>
-                        <img src="images/avatar.jpg" class="post-actitivty-user-icon">
-                        <img src="images/down-arrow.png" class="post-actitivty-arrow-icon">
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/like.png">
-                        <span>Thích</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/comment.png">
-                        <span>Bình luận</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/share.png">
-                        <span>Chia sẻ</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/send.png">
-                        <span>Chuyển tiếp</span>
-                    </div>
-                </div>
-            </div>
-            <div class="post">
-                <div class="post-author">
-                    <img src="images/user-3.png">
-                    <div>
-                        <h1>trần kính hoàng</h1>
-                        <small></small>
-                        <small>10/06/2023 &middot; 12:56 PM</small>
-                    </div>
-                </div>
-                <p>Gọi em là cẩu vì anh...</p>
-                <p>Cần cẩu</p>
-                <img src="images/akita.jpeg" width="100%">
-                <div class="post-stats">
-                    <div>
-                        <img src="images/thumbsup.png">
-                        <img src="images/love.png">
-                        <img src="images/clap.png">
-                        <span class="liked-users">trần kính hoàng và  75 người khác </span>
-                    </div>
-                    <div>
-                        <span>22 lượt bình luận &middot; 40 lượt chia sẻ</span>
-                    </div>
-                </div>
-                <div class="post-actitivty">
-                    <div>
-                        <img src="images/avatar.jpg" class="post-actitivty-user-icon">
-                        <img src="images/down-arrow.png" class="post-actitivty-arrow-icon">
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/like.png">
-                        <span>Thích</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/comment.png">
-                        <span>Bình luận</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/share.png">
-                        <span>Chia sẻ</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/send.png">
-                        <span>Chuyển tiếp</span>
-                    </div>
-                </div>
-            </div>
+        // render that thing!
+        function render() {
+          // next animation frame
+          requestAnimationFrame(render);
 
-            <div class="post">
-                <div class="post-author">
-                    <img src="images/user-3.png">
-                    <div>
-                        <h1>trần kính hoàng</h1>
-                        <small></small>
-                        <small>10/06/2023 &middot; 12:56 PM</small>
-                    </div>
-                </div>
-                <p></p>
-                <p>Cần cẩu</p>
-                <img src="images/akita.jpeg" width="100%">
-                <div class="post-stats">
-                    <div>
-                        <img src="images/thumbsup.png">
-                        <img src="images/love.png">
-                        <img src="images/clap.png">
-                        <span class="liked-users">trần kính hoàng và  75 người khác </span>
-                    </div>
-                    <div>
-                        <span>22 lượt bình luận &middot; 40 lượt chia sẻ</span>
-                    </div>
-                </div>
-                <div class="post-actitivty">
-                    <div>
-                        <img src="images/avatar.jpg" class="post-actitivty-user-icon">
-                        <img src="images/down-arrow.png" class="post-actitivty-arrow-icon">
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/like.png">
-                        <span>Thích</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/comment.png">
-                        <span>Bình luận</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/share.png">
-                        <span>Chia sẻ</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/send.png">
-                        <span>Chuyển tiếp</span>
-                    </div>
-                </div>
-            </div>
-            <div class="post">
-                <div class="post-author">
-                    <img src="images/user-3.png">
-                    <div>
-                        <h1>trần kính hoàng</h1>
-                        <small></small>
-                        <small>10/06/2023 &middot; 12:56 PM</small>
-                    </div>
-                </div>
-                <p>Gọi em là cẩu vì anh...</p>
-                <p>Cần cẩu</p>
-                <img src="images/akita.jpeg" width="100%">
-                <div class="post-stats">
-                    <div>
-                        <img src="images/thumbsup.png">
-                        <img src="images/love.png">
-                        <img src="images/clap.png">
-                        <span class="liked-users">trần kính hoàng và  75 người khác </span>
-                    </div>
-                    <div>
-                        <span>22 lượt bình luận &middot; 40 lượt chia sẻ</span>
-                    </div>
-                </div>
-                <div class="post-actitivty">
-                    <div>
-                        <img src="images/avatar.jpg" class="post-actitivty-user-icon">
-                        <img src="images/down-arrow.png" class="post-actitivty-arrow-icon">
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/like.png">
-                        <span>Thích</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/comment.png">
-                        <span>Bình luận</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/share.png">
-                        <span>Chia sẻ</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/send.png">
-                        <span>Chuyển tiếp</span>
-                    </div>
-                </div>
-            </div>
+          // update time
+          var newTime = new Date().getTime() / 1000,
+            deltaTime = newTime - (time || newTime);
+          time = newTime;
 
-            <div class="post">
-                <div class="post-author">
-                    <img src="images/user-3.png">
-                    <div>
-                        <h1>trần kính hoàng</h1>
-                        <small></small>
-                        <small>10/06/2023 &middot; 12:56 PM</small>
-                    </div>
-                </div>
-                <p></p>
-                <p>Cần cẩu</p>
-                <img src="images/akita.jpeg" width="100%">
-                <div class="post-stats">
-                    <div>
-                        <img src="images/thumbsup.png">
-                        <img src="images/love.png">
-                        <img src="images/clap.png">
-                        <span class="liked-users">trần kính hoàng và  75 người khác </span>
-                    </div>
-                    <div>
-                        <span>22 lượt bình luận &middot; 40 lượt chia sẻ</span>
-                    </div>
-                </div>
-                <div class="post-actitivty">
-                    <div>
-                        <img src="images/avatar.jpg" class="post-actitivty-user-icon">
-                        <img src="images/down-arrow.png" class="post-actitivty-arrow-icon">
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/like.png">
-                        <span>Thích</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/comment.png">
-                        <span>Bình luận</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/share.png">
-                        <span>Chia sẻ</span>
-                    </div>
-                    <div class="post-actitivty-link">
-                        <img src="images/send.png">
-                        <span>Chuyển tiếp</span>
-                    </div>
-                </div>
-            </div>
+          // clear canvas
+          context.clearRect(0, 0, canvas.width, canvas.height);
 
+          // create new particles
+          var amount = particleRate * deltaTime;
+          for (var i = 0; i < amount; i++) {
+            var pos = pointOnHeart(Math.PI - 2 * Math.PI * Math.random());
+            var dir = pos.clone().length(settings.particles.velocity);
+            particles.add(
+              canvas.width / 2 + pos.x,
+              canvas.height / 2 - pos.y,
+              dir.x,
+              -dir.y
+            );
+          }
 
+          // update and draw particles
+          particles.update(deltaTime);
+          particles.draw(context, image);
+        }
 
+        // handle (re-)sizing of the canvas
+        function onResize() {
+          canvas.width = canvas.clientWidth;
+          canvas.height = canvas.clientHeight;
+        }
+        window.onresize = onResize;
 
-        </div>
-
-
-
-        <!-- -------------------right-sidebar------------------ -->
-        <div class="right-sidebar">
-            <div class="sidebar-news">
-                <img src="images/more.png" class="info-icon">
-                <h3>Trending News</h3>
-                <a href="#">High Demond for skilled manapower</a>
-                <span>1d ago &middot; 10,935 readers</span>
-
-                <a href="#">High Demond for skilled manapower</a>
-                <span>1d ago &middot; 10,935 readers</span>
-
-                <a href="#">High Demond for skilled manapower</a>
-                <span>1d ago &middot; 10,935 readers</span>
-
-                <a href="#">High Demond for skilled manapower</a>
-                <span>1d ago &middot; 10,935 readers</span>
-
-                <a href="#" class="read-more-link">Read More</a>
-                
-            </div>
-            <div class="sidebar-ads">
-                <small>Ads &middot; &middot; &middot;</small>
-                <p>Học cách làm người bình thường</p>
-                <div>
-                    <img src="images/avatar.jpg">
-                    <img src="images/mi-logo.png">
-                    <img src="images/avatar.jpg">
-                </div>
-                <b>Brand and something like that</b>
-                <a href="#" class="ad-link">Xem Thêm</a>
-            </div>
-
-            <div class="sidebar-useful-link">
-                <a href="#">About</a>
-                <a href="#">About</a>
-                <a href="#">About</a>
-                <a href="#">About</a>
-                <a href="#">About</a>
-                <a href="#">About</a>
-                <a href="#">About</a>
-                <a href="#">About</a>
-
-                <div class="copyright-msg">
-                    <img src="images/logo.png">
-                    <p>TUI THÍCH EM NGỌC ANH</p>
-                </div>
-                <div class="heartnew">
-                  <div class="heart">
-                    <div class="left"></div>
-                    <div class="right"></div>
-                  </div>
-                </div>
-            </div>
-
-        </div>
-    </div> 
-  
-<script>
-  let profileMenu = document.getElementById("profileMenu");
-
-  function toggleMenu(){
-    profileMenu.classList.toggle("open-menu")
-  }
-
-</script>
-
-
-</body>
+        // delay rendering bootstrap
+        setTimeout(function () {
+          onResize();
+          render();
+        }, 10);
+      })(document.getElementById("pinkboard"));
+    </script>
+    <div class="message">
+      <style>
+        h1 {
+          background-color: rgb(0, 0, 0);
+          width: 100%;
+          font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+            "Lucida Sans", Arial, sans-serif;
+          color: red;
+          height: 100%;
+          font-size: 35px;
+          font-style: bold;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 5px;
+          text-align: justify;
+          display: flex;
+          flex-direction: column;
+          padding-top: 290px;
+        }
+      </style>
+      <h1>Chúc Ngọc Anh ngày 20/10 vui vẻ !</h1>
+    </div>
+  </body>
 </html>
